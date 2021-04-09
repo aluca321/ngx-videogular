@@ -22,6 +22,7 @@ import { IMediaElement } from '../../interfaces/i-media-element.interface';
 import { VgApiService } from '../../services/vg-api/vg-api.service';
 import { VgStates } from '../../services/states/vg-states.service';
 import { VgEvents } from '../../services/events/vg-events.service';
+import { VgUtilsService } from '../../services/vg-utils/vg-utils.service';
 
 @Directive({
   selector: '[vgMedia]',
@@ -45,6 +46,7 @@ export class VgMediaDirective implements OnInit, OnDestroy, IPlayable {
   isWaiting = false;
   isCompleted = false;
   isLive = false;
+  isAds = false;
 
   isBufferDetected = false;
 
@@ -115,10 +117,13 @@ export class VgMediaDirective implements OnInit, OnDestroy, IPlayable {
       timeUpdate: fromEvent(this.elem as any, VgEvents.VG_TIME_UPDATE),
       volumeChange: fromEvent(this.elem as any, VgEvents.VG_VOLUME_CHANGE),
       waiting: fromEvent(this.elem as any, VgEvents.VG_WAITING),
-
       // Advertisement only events
       startAds: fromEvent(window as any, VgEvents.VG_START_ADS),
       endAds: fromEvent(window as any, VgEvents.VG_END_ADS),
+      // Hls only events ====== 自定义事件
+      hlsError: fromEvent(window as any, VgEvents.VG_HLS_ERROR),
+      // ios play ads events ====== 适配ios
+      iosPlay: fromEvent(window as any, VgEvents.VG_IOS_PLAY),
 
       // See changes on <source> child elements to reload the video file
       mutation: new Observable((observer: any) => {
@@ -272,11 +277,18 @@ export class VgMediaDirective implements OnInit, OnDestroy, IPlayable {
   }
 
   play() {
+    const isIos = VgUtilsService.isiOSDevice();
+
     // short-circuit if already playing
     if (
       this.playPromise ||
       (this.state !== VgStates.VG_PAUSED && this.state !== VgStates.VG_ENDED)
     ) {
+      return;
+    }
+    if(isIos && !this.isAds){
+      window.dispatchEvent(new CustomEvent(VgEvents.VG_IOS_PLAY));
+      this.isAds = true;
       return;
     }
 
@@ -293,7 +305,6 @@ export class VgMediaDirective implements OnInit, OnDestroy, IPlayable {
           // deliberately empty for the sake of eating console noise
         });
     }
-
     return this.playPromise;
   }
 

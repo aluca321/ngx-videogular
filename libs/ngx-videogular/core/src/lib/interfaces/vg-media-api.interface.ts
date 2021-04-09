@@ -56,4 +56,8 @@ export interface IMediaSubscriptions {
   // to observe the ads
   startAds: Observable<any>;
   endAds: Observable<any>;
+  // hls error event to observe
+  hlsError: Observable<any>;
+  // ios play event to observe
+  iosPlay: Observable<any>;
 }

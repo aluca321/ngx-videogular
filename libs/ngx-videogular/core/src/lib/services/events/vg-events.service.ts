@@ -35,4 +35,8 @@ export class VgEvents {
 
   static VG_START_ADS = 'startads';
   static VG_END_ADS = 'endads';
+  // hls error 事件
+  static VG_HLS_ERROR = 'hlserror';
+  // ios设备播放事件
+  static VG_IOS_PLAY = 'iosplay';
 }

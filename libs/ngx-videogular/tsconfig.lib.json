@@ -19,7 +19,7 @@
     "lib": ["dom", "es2015", "es5"],
     "types": [],
     "paths": {
-      "@videogular/ngx-videogular/*": ["./*/src/index"]
+      "@videogular/ngx-videogular/*": ["./*/src/index"],
     }
   },
   "files": ["public-api.ts"],
@@ -29,7 +29,7 @@
     "**/*.spec.ts"
   ],
   "angularCompilerOptions": {
-    "enableIvy": false,
+    "enableIvy": true,
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
     "flatModuleOutFile": "index.js",

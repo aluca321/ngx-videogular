@@ -14,6 +14,7 @@ import {
   IHLSConfig,
   BitrateOptions,
   VgApiService,
+  VgEvents,
 } from '@videogular/ngx-videogular/core';
 
 declare let Hls: {
@@ -71,6 +72,7 @@ export class VgHlsDirective implements OnInit, OnChanges, OnDestroy {
     this.config.xhrSetup = (xhr: {
       withCredentials: boolean;
       setRequestHeader: (arg0: string, arg1: string) => void;
+      addEventListener: (type, handler) => void
     }) => {
       // Send cookies
       if (this.crossorigin === 'use-credentials') {
@@ -79,6 +81,10 @@ export class VgHlsDirective implements OnInit, OnChanges, OnDestroy {
       for (const key of Object.keys(this.vgHlsHeaders)) {
         xhr.setRequestHeader(key, this.vgHlsHeaders[key]);
       }
+      // 添加错误处理
+      xhr.addEventListener('error', (e) => {
+        window.dispatchEvent(new CustomEvent(VgEvents.VG_HLS_ERROR, { detail: xhr }));
+      });
     };
 
     this.createPlayer();

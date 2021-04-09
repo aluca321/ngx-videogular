@@ -73,7 +73,10 @@
               "docs/ngx-videogular-demo/tsconfig.app.json",
               "docs/ngx-videogular-demo/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!docs/ngx-videogular-demo/**/*"]
+            "exclude": [
+              "**/node_modules/**",
+              "!docs/ngx-videogular-demo/**/*"
+            ]
           }
         },
         "test": {
@@ -110,7 +113,10 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": "docs/ngx-videogular-e2e/tsconfig.e2e.json",
-            "exclude": ["**/node_modules/**", "!docs/ngx-videogular-e2e/**/*"]
+            "exclude": [
+              "**/node_modules/**",
+              "!docs/ngx-videogular-e2e/**/*"
+            ]
           }
         }
       }
@@ -140,7 +146,10 @@
               "libs/ngx-videogular/tsconfig.lib.json",
               "libs/ngx-videogular/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "!libs/ngx-videogular/**/*"]
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/ngx-videogular/**/*"
+            ]
           }
         },
         "test": {
@@ -167,7 +176,8 @@
   },
   "cli": {
     "defaultCollection": "@nrwl/angular",
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": "6189b637-01a9-47ca-8ae7-b6effe6a74b2"
   },
   "schematics": {
     "@nrwl/angular:application": {

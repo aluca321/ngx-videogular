@@ -92,19 +92,6 @@ export class VgImaAdsComponent implements OnInit, OnDestroy {
 
     this.initializations();
 
-    this.subscriptions.push(
-      this.target.subscriptions.ended.subscribe(this.onContentEnded.bind(this))
-    );
-    this.subscriptions.push(
-      this.target.subscriptions.play.subscribe(this.onUpdateState.bind(this))
-    );
-
-    this.subscriptions.push(
-      this.fsAPI.onChangeFullscreen.subscribe(
-        this.onChangeFullscreen.bind(this)
-      )
-    );
-
     this.ima.adsLoader.addEventListener(
       google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
       this.onAdsManagerLoaded.bind(this),
@@ -116,12 +103,27 @@ export class VgImaAdsComponent implements OnInit, OnDestroy {
       false
     );
 
+    this.subscriptions.push(
+      this.target.subscriptions.ended.subscribe(this.onContentEnded.bind(this))
+    );
+    this.subscriptions.push(
+      this.target.subscriptions.play.subscribe(this.onUpdateState.bind(this))
+    );
+    this.subscriptions.push(
+      this.target.subscriptions.iosPlay.subscribe(this.onPlayIosAds.bind(this))
+    );
+    this.subscriptions.push(
+      this.fsAPI.onChangeFullscreen.subscribe(
+        this.onChangeFullscreen.bind(this)
+      )
+    );
+
+
     this.loadAds();
   }
 
   initializations() {
     this.ima = new Ima(this.elem, this.vgSkipButtonLocale);
-
     if (this.vgSkipButton) {
       this.skipButton = document.querySelector(
         this.vgSkipButton
@@ -182,10 +184,19 @@ export class VgImaAdsComponent implements OnInit, OnDestroy {
     }
   }
 
+  onPlayIosAds(event: any) {
+    if(event.type == VgEvents.VG_IOS_PLAY){
+      if (!this.ima.adsLoaded) {
+        this.ima.adDisplayContainer.initialize();
+        this.requestAds(this.vgAdTagUrl);
+        this.ima.adsLoaded = true;
+      }
+    };
+  }
+
   requestAds(adTagUrl: string) {
     // Show only to get computed style in pixels
     this.show();
-
     const adsRequest = new google.ima.AdsRequest();
     const computedStyle = window.getComputedStyle(this.elem);
     adsRequest.adTagUrl = adTagUrl;
@@ -194,12 +205,11 @@ export class VgImaAdsComponent implements OnInit, OnDestroy {
     adsRequest.linearAdSlotHeight = parseInt(computedStyle.height, 10);
     adsRequest.nonLinearAdSlotWidth = parseInt(computedStyle.width, 10);
     adsRequest.nonLinearAdSlotHeight = parseInt(computedStyle.height, 10);
-
     this.ima.adsLoader.requestAds(adsRequest);
   }
 
   onAdsManagerLoaded(evt: google.ima.AdsManagerLoadedEvent) {
-    this.show();
+    // this.show();
     this.ima.adsManager = evt.getAdsManager(this.target);
     this.processAdsManager(this.ima.adsManager);
   }
@@ -207,7 +217,6 @@ export class VgImaAdsComponent implements OnInit, OnDestroy {
   processAdsManager(adsManager: google.ima.AdsManager) {
     const w = this.API.videogularElement.offsetWidth;
     const h = this.API.videogularElement.offsetHeight;
-
     // Attach the pause/resume events.
     this.ima.adsManager.addEventListener(
       google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
@@ -260,7 +269,7 @@ export class VgImaAdsComponent implements OnInit, OnDestroy {
   }
 
   onContentPauseRequested() {
-    this.show();
+    // this.show();
     this.API.pause();
     this.onAdStop.emit(true);
   }
