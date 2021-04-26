@@ -187,6 +187,7 @@ export class VgImaAdsComponent implements OnInit, OnDestroy {
   onPlayIosAds(event: any) {
     if(event.type == VgEvents.VG_IOS_PLAY){
       if (!this.ima.adsLoaded) {
+        console.info('play ios');
         this.ima.adDisplayContainer.initialize();
         this.requestAds(this.vgAdTagUrl);
         this.ima.adsLoaded = true;
@@ -205,6 +206,8 @@ export class VgImaAdsComponent implements OnInit, OnDestroy {
     adsRequest.linearAdSlotHeight = parseInt(computedStyle.height, 10);
     adsRequest.nonLinearAdSlotWidth = parseInt(computedStyle.width, 10);
     adsRequest.nonLinearAdSlotHeight = parseInt(computedStyle.height, 10);
+    adsRequest.forceNonLinearFullSlot = true;
+    adsRequest.liveStreamPrefetchSeconds = 2;
     this.ima.adsLoader.requestAds(adsRequest);
   }
 
@@ -215,8 +218,9 @@ export class VgImaAdsComponent implements OnInit, OnDestroy {
   }
   // @ts-ignore
   processAdsManager(adsManager: google.ima.AdsManager) {
-    const w = this.API.videogularElement.offsetWidth;
-    const h = this.API.videogularElement.offsetHeight;
+    const w = this.API.videogularElement.clientWidth;
+    const h = this.API.videogularElement.clientHeight;
+    console.info(w,h);
     // Attach the pause/resume events.
     this.ima.adsManager.addEventListener(
       google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
@@ -275,12 +279,13 @@ export class VgImaAdsComponent implements OnInit, OnDestroy {
   }
 
   onContentResumeRequested() {
-    this.API.play();
+    // this.API.play();
     this.onAdStart.emit(true);
     this.hide();
   }
   // @ts-ignore
   onAdError(evt) {
+    console.info(evt);
     if (this.ima.adsManager) {
       this.ima.adsManager.destroy();
     }
@@ -327,6 +332,7 @@ export class VgImaAdsComponent implements OnInit, OnDestroy {
 
   private onMissingGoogleImaLoader() {
     this.hide();
+    console.info('no ima');
     this.API.play();
   }
 

@@ -20,7 +20,7 @@ import {
 declare let Hls: {
   new (arg0: IHLSConfig): any;
   isSupported: () => any;
-  Events: { MANIFEST_PARSED: any; LEVEL_LOADED: any };
+  Events: { MANIFEST_PARSED: any; LEVEL_LOADED: any, ERROR: any };
 };
 
 @Directive({
@@ -81,10 +81,6 @@ export class VgHlsDirective implements OnInit, OnChanges, OnDestroy {
       for (const key of Object.keys(this.vgHlsHeaders)) {
         xhr.setRequestHeader(key, this.vgHlsHeaders[key]);
       }
-      // 添加错误处理
-      xhr.addEventListener('error', (e) => {
-        window.dispatchEvent(new CustomEvent(VgEvents.VG_HLS_ERROR, { detail: xhr }));
-      });
     };
 
     this.createPlayer();
@@ -125,6 +121,18 @@ export class VgHlsDirective implements OnInit, OnChanges, OnDestroy {
       const video: HTMLVideoElement = this.ref.nativeElement;
 
       this.hls = new Hls(this.config);
+
+      // error handling
+      this.hls.on(Hls.Events.ERROR,  (event, data) => {
+        const errorType = data.type;
+        const errorDetails = data.details;
+        const errorFatal = data.fatal;
+        if(errorFatal){
+          window.dispatchEvent(new CustomEvent(VgEvents.VG_HLS_ERROR, { detail: true }));
+        }
+        console.info('hls error  Info:', errorType, errorDetails, errorFatal);
+      });
+
       // @ts-ignore
       this.hls.on(
         Hls.Events.MANIFEST_PARSED,

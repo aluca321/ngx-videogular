@@ -99,6 +99,8 @@ declare namespace google {
       linearAdSlotHeight: number;
       nonLinearAdSlotWidth: number;
       nonLinearAdSlotHeight: number;
+      forceNonLinearFullSlot: boolean;
+      liveStreamPrefetchSeconds: number;
     }
 
     /**

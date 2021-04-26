@@ -292,8 +292,12 @@ export class VgMediaDirective implements OnInit, OnDestroy, IPlayable {
       return;
     }
 
+    if(!this.isAds){
+      window.dispatchEvent(new CustomEvent(VgEvents.VG_IOS_PLAY));
+      this.isAds = true;
+      return;
+    }
     this.playPromise = this.vgMedia.play();
-
     // browser has async play promise
     if (this.playPromise && this.playPromise.then && this.playPromise.catch) {
       this.playPromise
@@ -418,7 +422,6 @@ export class VgMediaDirective implements OnInit, OnDestroy, IPlayable {
   // @ts-ignore
   onPlay(event: any) {
     this.state = VgStates.VG_PLAYING;
-
     if (this.vgMaster) {
       if (!this.syncSubscription || this.syncSubscription.closed) {
         this.startSync();
