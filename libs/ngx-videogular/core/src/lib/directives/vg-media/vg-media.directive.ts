@@ -91,7 +91,6 @@ export class VgMediaDirective implements OnInit, OnDestroy, IPlayable {
 
     // Just in case we're creating this vgMedia dynamically register again into API
     this.api.registerMedia(this);
-
     this.subscriptions = {
       // Native events
       abort: fromEvent(this.elem as any, VgEvents.VG_ABORT),
